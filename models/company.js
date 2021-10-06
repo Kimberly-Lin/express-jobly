@@ -66,8 +66,7 @@ class Company {
     return companiesRes.rows;
   }
 
-  /** findFiltered
-   * Given filter criteria, returns data about matching companies. 
+  /** Given filter criteria, returns data about matching companies. 
    * 
    * If minEmployees > maxEmployees, throws a BadRequestError("minEmployees must
    * be less than maxEmployees").
@@ -77,9 +76,6 @@ class Company {
    * Throws a NotFoundError if there are no matching companies.
    */
   static async findFiltered(filter) {
-    // need to get keys
-    // set each key = $variable
-    // get an array of values
     const { minEmployees, maxEmployees } = filter;
 
     if (minEmployees && maxEmployees) {
@@ -88,10 +84,8 @@ class Company {
       }
     }
 
-    filter.name = `%${filter.name}%`
-
+    filter.name = `%${filter.name}%`;
     const values = Object.values(filter);
-
     const sqlWhere = sqlForFilteringCompany(filter);
 
     const filteredComp = await db.query(`SELECT handle,
@@ -103,11 +97,11 @@ class Company {
                               WHERE ${sqlWhere}
                               ORDER BY name`, values);
 
-    if (!(filteredComp.rows[0])) throw new NotFoundError("No companies matching your filters are found.")
-
+    if (!(filteredComp.rows[0])) {
+      throw new NotFoundError("No companies matching your filters are found.")
+    };
     return filteredComp.rows;
-  }
-
+  };
 
 
   /** Given a company handle, return data about company.

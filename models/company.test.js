@@ -119,7 +119,7 @@ describe("findFiltered", function () {
       fail();
     } catch (err) {
       expect(err instanceof NotFoundError).toBeTruthy();
-      expect(err.message).toEqual("No companies matching your filters are found.")
+      expect(err.message).toEqual("No companies matching your filters are found.");
     }
   });
 

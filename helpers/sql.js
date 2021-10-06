@@ -2,7 +2,7 @@
 
 const { BadRequestError } = require("../expressError");
 
-/** Turn data object in JS into SQL compatible column names and values.
+/** Create SQL column names and values for update.
  * 
  * ({data}, {camelCase to snakeCase}) 
  * => {setCols: "fld1, fld2,...", values: [val1, val2,...]}
@@ -23,7 +23,6 @@ function sqlForPartialUpdate(dataToUpdate, jsToSql) {
   const keys = Object.keys(dataToUpdate);
   if (keys.length === 0) throw new BadRequestError("No data");
 
-  // {firstName: 'Aliya', age: 32} => ['"first_name"=$1', '"age"=$2']
   const cols = keys.map((colName, idx) =>
     `"${jsToSql[colName] || colName}"=$${idx + 1}`,
   );
@@ -37,7 +36,7 @@ function sqlForPartialUpdate(dataToUpdate, jsToSql) {
 /** Turns filterBy object into SQL WHERE compatible clause
  * 
  * {name, minEmployees, maxEmployees} 
- * => "name = $1 AND numEmployees > $2 AND numEmployees < $3"
+ * => "name ILIKE $1 AND num_employees >= $2 AND num_employees <= $3"
  * 
  */
 function sqlForFilteringCompany(filterBy) {
