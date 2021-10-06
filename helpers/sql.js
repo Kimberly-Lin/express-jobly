@@ -34,4 +34,33 @@ function sqlForPartialUpdate(dataToUpdate, jsToSql) {
   };
 }
 
-module.exports = { sqlForPartialUpdate };
+/** Turns filterBy object into SQL WHERE compatible clause
+ * 
+ * {name, minEmployees, maxEmployees} 
+ * => "name = $1 AND numEmployees > $2 AND numEmployees < $3"
+ * 
+ */
+function sqlForFilteringCompany(filterBy) {
+  let sqlWhere = "";
+  let ind = 1;
+  for (let field in filterBy) {
+    if (field === "name") {
+      sqlWhere += `name ILIKE $${ind} AND `;
+      ind++;
+    } else if (field === "minEmployees") {
+      sqlWhere += `num_employees >= $${ind} AND `
+      ind++;
+    } else {
+      sqlWhere += `num_employees <= $${ind} AND `
+      ind++;
+    }
+  }
+
+  sqlWhere = sqlWhere.slice(0, sqlWhere.length - 4);
+  return sqlWhere;
+}
+
+module.exports = {
+  sqlForPartialUpdate,
+  sqlForFilteringCompany
+};

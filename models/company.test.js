@@ -31,7 +31,7 @@ describe("create", function () {
     expect(company).toEqual(newCompany);
 
     const result = await db.query(
-          `SELECT handle, name, description, num_employees, logo_url
+      `SELECT handle, name, description, num_employees, logo_url
            FROM companies
            WHERE handle = 'new'`);
     expect(result.rows).toEqual([
@@ -91,9 +91,9 @@ describe("findAll", function () {
 
 describe("findFiltered", function () {
   test("works", async function () {
-    const results = await findFiltered({
+    const results = await Company.findFiltered({
       name: "c",
-      minEmployees: 1, 
+      minEmployees: 1,
       maxEmployees: 2
     });
 
@@ -111,17 +111,20 @@ describe("findFiltered", function () {
         description: "Desc2",
         numEmployees: 2,
         logoUrl: "http://c2.img",
-    }]); 
+      }]);
   });
   test("no matching values", async function () {
-    const results = await findFiltered({
-      name: "Super Cool Company"
-    });
-
-    expect(results.statusCode).toEqual(404);
+    try {
+      await Company.findFiltered({ name: "Super Cool Company" });
+      fail();
+    } catch (err) {
+      expect(err instanceof NotFoundError).toBeTruthy();
+      expect(err.message).toEqual("No companies matching your filters are found.")
+    }
   });
+
   test("exact match search", async function () {
-    const results = await findFiltered({
+    const results = await Company.findFiltered({
       name: "C1"
     });
 
@@ -132,17 +135,21 @@ describe("findFiltered", function () {
         description: "Desc1",
         numEmployees: 1,
         logoUrl: "http://c1.img",
-    }]);
+      }]);
   });
-  test("min > max", async function () {
-    const results = await findFiltered({
-      minEmployees: 5,
-      maxEmployees:1
-    });
 
-    expect(results.statusCode).toEqual(400);
-    expect(results.err).toEqual("minEmployees must be less than maxEmployees");
-  })
+  test("min > max", async function () {
+    try {
+      await Company.findFiltered({
+        minEmployees: 5,
+        maxEmployees: 1
+      });
+    } catch (err) {
+      expect(err instanceof BadRequestError).toBeTruthy();
+      expect(err.message).toEqual("minEmployees must be less than maxEmployees");
+    }
+  });
+
 });
 
 /************************************** get */
@@ -187,7 +194,7 @@ describe("update", function () {
     });
 
     const result = await db.query(
-          `SELECT handle, name, description, num_employees, logo_url
+      `SELECT handle, name, description, num_employees, logo_url
            FROM companies
            WHERE handle = 'c1'`);
     expect(result.rows).toEqual([{
@@ -214,7 +221,7 @@ describe("update", function () {
     });
 
     const result = await db.query(
-          `SELECT handle, name, description, num_employees, logo_url
+      `SELECT handle, name, description, num_employees, logo_url
            FROM companies
            WHERE handle = 'c1'`);
     expect(result.rows).toEqual([{
@@ -251,7 +258,7 @@ describe("remove", function () {
   test("works", async function () {
     await Company.remove("c1");
     const res = await db.query(
-        "SELECT handle FROM companies WHERE handle='c1'");
+      "SELECT handle FROM companies WHERE handle='c1'");
     expect(res.rows.length).toEqual(0);
   });
 
