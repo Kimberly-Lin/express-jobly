@@ -66,6 +66,35 @@ class Company {
     return companiesRes.rows;
   }
 
+  /** findFiltered
+   * Given filter criteria, returns data about matching companies. 
+   * 
+   * If minEmployees > maxEmployees, throws a BadRequestError("minEmployees must
+   * be less than maxEmployees").
+   * 
+   * Returns [{ handle, name, description, numEmployees, logoUrl }, ...]
+   * 
+   * Throws a NotFoundError if there are no matching companies.
+   */
+  static async findFiltered(filter) {
+    // what are we passing in? 
+    // change to snake case
+    // throw an error if min>max
+
+    `SELECT handle,
+            name,
+            description,
+            num_employees AS "numEmployees",
+            logo_url AS "logoUrl"
+        FROM companies
+        WHERE ${setCols}
+        ORDER BY name`, [...values];
+
+
+  }
+
+
+
   /** Given a company handle, return data about company.
    *
    * Returns { handle, name, description, numEmployees, logoUrl, jobs }

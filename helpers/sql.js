@@ -2,7 +2,7 @@
 
 const { BadRequestError } = require("../expressError");
 
-/** Turn data object in JS into SQL compatible column names and values for queries.
+/** Turn data object in JS into SQL compatible column names and values.
  * 
  * ({data}, {camelCase to snakeCase}) 
  * => {setCols: "fld1, fld2,...", values: [val1, val2,...]}
@@ -10,9 +10,12 @@ const { BadRequestError } = require("../expressError");
  * Throws BadRequestError if dataToUpdate is empty.
  * 
  * Example:
- * {firstName: "first", lastName: "last"}, {firstName = "first_name", lastName = "last_name"}
+ * {firstName: "first", lastName: "last"}, 
+ * {firstName: "first_name", lastName: "last_name"}
  * 
- * Returns {setCols: "first_name, last_name", values: ["first',"last"]}
+ * Returns: {
+ * setCols: '\"first_name\"=$1, \"last_name\"=$2', 
+ * values: ["first',"last"]}
  * 
  * */
 

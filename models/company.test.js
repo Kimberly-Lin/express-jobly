@@ -87,6 +87,64 @@ describe("findAll", function () {
   });
 });
 
+/************************************** findFiltered */
+
+describe("findFiltered", function () {
+  test("works", async function () {
+    const results = await findFiltered({
+      name: "c",
+      minEmployees: 1, 
+      maxEmployees: 2
+    });
+
+    expect(results).toEqual([
+      {
+        handle: "c1",
+        name: "C1",
+        description: "Desc1",
+        numEmployees: 1,
+        logoUrl: "http://c1.img",
+      },
+      {
+        handle: "c2",
+        name: "C2",
+        description: "Desc2",
+        numEmployees: 2,
+        logoUrl: "http://c2.img",
+    }]); 
+  });
+  test("no matching values", async function () {
+    const results = await findFiltered({
+      name: "Super Cool Company"
+    });
+
+    expect(results.statusCode).toEqual(404);
+  });
+  test("exact match search", async function () {
+    const results = await findFiltered({
+      name: "C1"
+    });
+
+    expect(results).toEqual([
+      {
+        handle: "c1",
+        name: "C1",
+        description: "Desc1",
+        numEmployees: 1,
+        logoUrl: "http://c1.img",
+    }]);
+  });
+  test("min > max", async function () {
+    const results = await findFiltered({
+      minEmployees: 5,
+      maxEmployees:1
+    });
+
+    expect(results.statusCode).toEqual(400);
+    expect(results.err).toEqual("minEmployees must be less than maxEmployees");
+  })
+});
+
 /************************************** get */
 
 describe("get", function () {
