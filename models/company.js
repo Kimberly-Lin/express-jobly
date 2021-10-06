@@ -77,9 +77,21 @@ class Company {
    * Throws a NotFoundError if there are no matching companies.
    */
   static async findFiltered(filter) {
-    // what are we passing in? 
-    // change to snake case
-    // throw an error if min>max
+    // need to get keys
+    // set each key = $variable
+    // get an array of values
+
+
+
+
+    const { name, minEmployees, maxEmployees } = filter;
+
+    if (minEmployees && maxEmployees) {
+      if (minEmployees > maxEmployees) {
+        throw new BadRequestError("minEmployees must be less than maxEmployees");
+      }
+    }
+
 
     `SELECT handle,
             name,
