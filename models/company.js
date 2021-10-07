@@ -199,7 +199,7 @@ class Company {
       } else if (field === "minEmployees") {
         sqlWhere += `num_employees >= $${ind} AND `
         ind++;
-      } else {
+      } else if (field === "maxEmployees") {
         sqlWhere += `num_employees <= $${ind} AND `
         ind++;
       }
