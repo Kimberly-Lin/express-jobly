@@ -76,7 +76,8 @@ class Company {
    * Throws a NotFoundError if there are no matching companies.
    */
   static async findFiltered(filter) {
-    const { minEmployees, maxEmployees } = filter;
+
+    const { minEmployees, maxEmployees } = filter; //don't need name 
 
     if (minEmployees && maxEmployees) {
       if (minEmployees > maxEmployees) {
@@ -86,9 +87,9 @@ class Company {
 
     filter.name = `%${filter.name}%`;
     const values = Object.values(filter);
-    const sqlWhere = sqlForFilteringCompany(filter);
+    const sqlWhere = Company.sqlForFiltering(filter);
 
-    const filteredComp = await db.query(`SELECT handle,
+    const result = await db.query(`SELECT handle,
                                      name,
                                      description,
                                      num_employees AS "numEmployees",
@@ -97,10 +98,11 @@ class Company {
                               WHERE ${sqlWhere}
                               ORDER BY name`, values);
 
-    if (!(filteredComp.rows[0])) {
+    const filteredComps = result.rows;
+    if (!filteredComps[0]) {
       throw new NotFoundError("No companies matching your filters are found.")
     };
-    return filteredComp.rows;
+    return filteredComps;
   };
 
 
@@ -180,6 +182,34 @@ class Company {
 
     if (!company) throw new NotFoundError(`No company: ${handle}`);
   }
+
+  /** Turns filterBy object into SQL WHERE compatible clause
+ * 
+ * {name, minEmployees, maxEmployees} 
+ * => "name ILIKE $1 AND num_employees >= $2 AND num_employees <= $3"
+ * 
+ */
+  static sqlForFiltering(filterBy) {
+    let sqlWhere = "";
+    let ind = 1;
+    for (let field in filterBy) {
+      if (field === "name") {
+        sqlWhere += `name ILIKE $${ind} AND `;
+        ind++;
+      } else if (field === "minEmployees") {
+        sqlWhere += `num_employees >= $${ind} AND `
+        ind++;
+      } else {
+        sqlWhere += `num_employees <= $${ind} AND `
+        ind++;
+      }
+    }
+
+    sqlWhere = sqlWhere.slice(0, sqlWhere.length - "AND ".length);
+    //if sqlWhere clauses is array, can use join with AND
+    return sqlWhere;
+  }
+
 }
 
 

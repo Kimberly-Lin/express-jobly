@@ -6,7 +6,7 @@ const jsonschema = require("jsonschema");
 const express = require("express");
 
 const { BadRequestError } = require("../expressError");
-const { ensureLoggedIn } = require("../middleware/auth");
+const { ensureLoggedIn, ensureAdmin } = require("../middleware/auth");
 const Company = require("../models/company");
 
 const companyNewSchema = require("../schemas/companyNew.json");
@@ -22,10 +22,10 @@ const router = new express.Router();
  *
  * Returns { handle, name, description, numEmployees, logoUrl }
  *
- * Authorization required: login
+ * Authorization required: login, admin only
  */
 
-router.post("/", ensureLoggedIn, async function (req, res, next) {
+router.post("/", ensureLoggedIn, ensureAdmin, async function (req, res, next) {
   const validator = jsonschema.validate(req.body, companyNewSchema);
   if (!validator.valid) {
     const errs = validator.errors.map(e => e.stack);
@@ -51,24 +51,19 @@ router.get("/", async function (req, res, next) {
   const filterBy = req.query;
 
   for (let key in filterBy) {
-    if(key === "minEmployees" || key === "maxEmployees"){
+    if (key === "minEmployees" || key === "maxEmployees") {
       filterBy[key] = Number(filterBy[key]);
     }
   }
-  
-  const result = jsonschema.validate(filterBy, companyFilter); 
+
+  const result = jsonschema.validate(filterBy, companyFilter);
   if (!result.valid) {
     let errs = result.errors.map(err => err.stack);
     throw new BadRequestError(errs);
   }
 
-  let companies;
+  const companies = (Object.keys(filterBy).length === 0) ? await Company.findAll() : await Company.findFiltered(filterBy);
 
-  if (Object.keys(filterBy).length === 0) {
-    companies = await Company.findAll();
-  } else {
-    companies = await Company.findFiltered(filterBy);
-  }
   return res.json({ companies });
 });
 
@@ -93,10 +88,10 @@ router.get("/:handle", async function (req, res, next) {
  *
  * Returns { handle, name, description, numEmployees, logo_url }
  *
- * Authorization required: login
+ * Authorization required: login, admin only
  */
 
-router.patch("/:handle", ensureLoggedIn, async function (req, res, next) {
+router.patch("/:handle", ensureLoggedIn, ensureAdmin, async function (req, res, next) {
   const validator = jsonschema.validate(req.body, companyUpdateSchema);
   if (!validator.valid) {
     const errs = validator.errors.map(e => e.stack);
@@ -109,10 +104,10 @@ router.patch("/:handle", ensureLoggedIn, async function (req, res, next) {
 
 /** DELETE /[handle]  =>  { deleted: handle }
  *
- * Authorization: login
+ * Authorization: login, admin only
  */
 
-router.delete("/:handle", ensureLoggedIn, async function (req, res, next) {
+router.delete("/:handle", ensureLoggedIn, ensureAdmin, async function (req, res, next) {
   await Company.remove(req.params.handle);
   return res.json({ deleted: req.params.handle });
 });

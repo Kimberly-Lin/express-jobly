@@ -141,8 +141,8 @@ describe("findFiltered", function () {
   test("min > max", async function () {
     try {
       await Company.findFiltered({
-        minEmployees: 5,
-        maxEmployees: 1
+        minEmployees: 11,
+        maxEmployees: 2
       });
     } catch (err) {
       expect(err instanceof BadRequestError).toBeTruthy();
@@ -269,5 +269,48 @@ describe("remove", function () {
     } catch (err) {
       expect(err instanceof NotFoundError).toBeTruthy();
     }
+  });
+});
+
+/***************************** sqlForFiltering */
+describe("create SQL for filtering companies WHERE clause", function () {
+  test("works with good data in all fields", function () {
+    const filterBy = { name: "c", minEmployees: 2, maxEmployees: 2 };
+    const results = Company.sqlForFiltering(filterBy);
+
+    expect(results)
+      .toEqual("name ILIKE $1 AND num_employees >= $2 AND num_employees <= $3 ");
+  });
+
+  test("works with good data in name only", function () {
+    const filterBy = { name: "c" };
+    const results = Company.sqlForFiltering(filterBy);
+
+    expect(results)
+      .toEqual("name ILIKE $1 ");
+  });
+
+  test("works with good data in minEmployees only", function () {
+    const filterBy = { minEmployees: 2 };
+    const results = Company.sqlForFiltering(filterBy);
+
+    expect(results)
+      .toEqual("num_employees >= $1 ");
+  });
+
+  test("works with good data in maxEmployees only", function () {
+    const filterBy = { maxEmployees: 2 };
+    const results = Company.sqlForFiltering(filterBy);
+
+    expect(results)
+      .toEqual("num_employees <= $1 ");
+  });
+
+  test("works with no data", function () {
+    const filterBy = {};
+    const results = Company.sqlForFiltering(filterBy);
+
+    expect(results)
+      .toEqual("");
   });
 });

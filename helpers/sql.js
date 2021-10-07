@@ -14,7 +14,7 @@ const { BadRequestError } = require("../expressError");
  * {firstName: "first_name", lastName: "last_name"}
  * 
  * Returns: {
- * setCols: '\"first_name\"=$1, \"last_name\"=$2', 
+ * setCols: '"first_name"=$1, "last_name"=$2', 
  * values: ["first',"last"]}
  * 
  * */
@@ -33,33 +33,6 @@ function sqlForPartialUpdate(dataToUpdate, jsToSql) {
   };
 }
 
-/** Turns filterBy object into SQL WHERE compatible clause
- * 
- * {name, minEmployees, maxEmployees} 
- * => "name ILIKE $1 AND num_employees >= $2 AND num_employees <= $3"
- * 
- */
-function sqlForFilteringCompany(filterBy) {
-  let sqlWhere = "";
-  let ind = 1;
-  for (let field in filterBy) {
-    if (field === "name") {
-      sqlWhere += `name ILIKE $${ind} AND `;
-      ind++;
-    } else if (field === "minEmployees") {
-      sqlWhere += `num_employees >= $${ind} AND `
-      ind++;
-    } else {
-      sqlWhere += `num_employees <= $${ind} AND `
-      ind++;
-    }
-  }
-
-  sqlWhere = sqlWhere.slice(0, sqlWhere.length - 4);
-  return sqlWhere;
-}
-
 module.exports = {
-  sqlForPartialUpdate,
-  sqlForFilteringCompany
+  sqlForPartialUpdate
 };
