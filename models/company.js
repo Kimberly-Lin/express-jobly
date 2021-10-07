@@ -87,7 +87,7 @@ class Company {
 
     filter.name = `%${filter.name}%`;
     const values = Object.values(filter);
-    const sqlWhere = Company.sqlForFiltering(filter);
+    const sqlWhere = Company._sqlForFiltering(filter);
 
     const result = await db.query(`SELECT handle,
                                      name,
@@ -189,7 +189,7 @@ class Company {
  * => "name ILIKE $1 AND num_employees >= $2 AND num_employees <= $3"
  * 
  */
-  static sqlForFiltering(filterBy) {
+  static _sqlForFiltering(filterBy) {
     let sqlWhere = "";
     let ind = 1;
     for (let field in filterBy) {
