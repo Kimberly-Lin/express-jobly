@@ -6,6 +6,7 @@ const {
   authenticateJWT,
   ensureLoggedIn,
   ensureAdmin,
+  ensureUserOrAdmin,
 } = require("./auth");
 
 
@@ -13,7 +14,7 @@ const { SECRET_KEY } = require("../config");
 const testJwt = jwt.sign({ username: "test", isAdmin: false }, SECRET_KEY);
 const badJwt = jwt.sign({ username: "test", isAdmin: false }, "wrong");
 
-
+/************************************** authenticateJWT */
 
 describe("authenticateJWT", function () {
   test("works: via header", function () {
@@ -56,6 +57,7 @@ describe("authenticateJWT", function () {
   });
 });
 
+/************************************** ensureLoggedIn  */
 
 describe("ensureLoggedIn", function () {
   test("works", function () {
@@ -79,6 +81,8 @@ describe("ensureLoggedIn", function () {
   });
 });
 
+/************************************** ensureAdmin */
+
 describe("ensureAdmin", function () {
   test("works", function () {
 
@@ -96,9 +100,46 @@ describe("ensureAdmin", function () {
     const req = {};
     const res = { locals: { user: { isAdmin: false } } };
     const next = function (err) {
-      console.log("our log", err);
+
       expect(err instanceof UnauthorizedError).toBeTruthy();
     };
     ensureAdmin(req, res, next);
+  });
+});
+
+/************************************** ensureUserOrAdmin */
+
+describe("ensureUserOrAdmin", function () {
+  test("works for admin", function () {
+
+    expect.assertions(1);
+    const req = { params: { username: "test" } };
+    const res = { locals: { user: { isAdmin: true, username: "random" } } };
+    console.log("res.locals.user.username is ", res.locals.user.username);
+    const next = function (err) {
+      expect(err).toBeFalsy();
+    };
+    ensureUserOrAdmin(req, res, next);
+  });
+
+  test("works for non-admin current user", function () {
+
+    expect.assertions(1);
+    const req = { params: { username: "test" } };
+    const res = { locals: { user: { isAdmin: false, username: "test" } } };
+    const next = function (err) {
+      expect(err).toBeFalsy();
+    };
+    ensureUserOrAdmin(req, res, next);
+  });
+
+  test("unauth if not admin and not the user", function () {
+    expect.assertions(1);
+    const req = { params: { username: "test" } };;
+    const res = { locals: { user: { isAdmin: false, username: "random" } } };
+    const next = function (err) {
+      expect(err instanceof UnauthorizedError).toBeTruthy();
+    };
+    ensureUserOrAdmin(req, res, next);
   });
 });
