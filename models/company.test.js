@@ -274,11 +274,11 @@ describe("remove", function () {
   });
 });
 
-/***************************** sqlForFiltering */
+/***************************** _sqlForFiltering */
 describe("create SQL for filtering companies WHERE clause", function () {
   test("works with good data in all fields", function () {
     const filterBy = { name: "c", minEmployees: 2, maxEmployees: 2 };
-    const results = Company.sqlForFiltering(filterBy);
+    const results = Company._sqlForFiltering(filterBy);
 
     expect(results)
       .toEqual("name ILIKE $1 AND num_employees >= $2 AND num_employees <= $3 ");
@@ -286,7 +286,7 @@ describe("create SQL for filtering companies WHERE clause", function () {
 
   test("works with good data in name only", function () {
     const filterBy = { name: "c" };
-    const results = Company.sqlForFiltering(filterBy);
+    const results = Company._sqlForFiltering(filterBy);
 
     expect(results)
       .toEqual("name ILIKE $1 ");
@@ -294,7 +294,7 @@ describe("create SQL for filtering companies WHERE clause", function () {
 
   test("works with good data in minEmployees only", function () {
     const filterBy = { minEmployees: 2 };
-    const results = Company.sqlForFiltering(filterBy);
+    const results = Company._sqlForFiltering(filterBy);
 
     expect(results)
       .toEqual("num_employees >= $1 ");
@@ -302,7 +302,7 @@ describe("create SQL for filtering companies WHERE clause", function () {
 
   test("works with good data in maxEmployees only", function () {
     const filterBy = { maxEmployees: 2 };
-    const results = Company.sqlForFiltering(filterBy);
+    const results = Company._sqlForFiltering(filterBy);
 
     expect(results)
       .toEqual("num_employees <= $1 ");
@@ -310,7 +310,7 @@ describe("create SQL for filtering companies WHERE clause", function () {
 
   test("works with no data", function () {
     const filterBy = {};
-    const results = Company.sqlForFiltering(filterBy);
+    const results = Company._sqlForFiltering(filterBy);
 
     expect(results)
       .toEqual("");
