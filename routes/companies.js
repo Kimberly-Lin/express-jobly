@@ -48,6 +48,7 @@ router.post("/", ensureLoggedIn, ensureAdmin, async function (req, res, next) {
  */
 
 router.get("/", async function (req, res, next) {
+
   const filterBy = req.query;
 
   for (let key in filterBy) {

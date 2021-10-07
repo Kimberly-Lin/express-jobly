@@ -60,17 +60,12 @@ function ensureAdmin(req, res, next) {
  * If not, raises Unauthorized.
  */
 
-//TODO: can get rid of try catch, write if condition for success, else for error (better for screening bugs)
 function ensureUserOrAdmin(req, res, next) {
-  try {
-    if (req.params.username !== res.locals.user.username
-      && res.locals.user.isAdmin === false) {
-      throw new UnauthorizedError("You must be the user or an admin");
-    }
-    return next();
-  } catch (err) {
-    return next(err);
+  if (req.params.username === res.locals.user.username
+   || res.locals.user.isAdmin === true) {
+     return next();
   }
+  throw new UnauthorizedError("You must be the user or an admin");
 }
 
 module.exports = {

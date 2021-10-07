@@ -85,8 +85,10 @@ describe("POST /companies", function () {
 /************************************** GET /companies */
 
 describe("GET /companies", function () {
-  test("ok for anon", async function () {
-    const resp = await request(app).get("/companies");
+  test("ok for logged in users", async function () {
+    const resp = await request(app)
+      .get("/companies")
+      .set("authorization", `Bearer ${u1Token}`);
     expect(resp.body).toEqual({
       companies:
         [
@@ -114,11 +116,9 @@ describe("GET /companies", function () {
         ],
     });
   });
-
-  test("ok for logged in users", async function () {
-    const resp = await request(app)
-      .get("/companies")
-      .set("authorization", `Bearer ${u1Token}`);
+  
+  test("ok for anon", async function () {
+    const resp = await request(app).get("/companies");
     expect(resp.body).toEqual({
       companies:
         [
@@ -181,8 +181,10 @@ describe("GET /companies", function () {
 /************************************** GET /companies/:handle */
 
 describe("GET /companies/:handle", function () {
-  test("works for anon", async function () {
-    const resp = await request(app).get(`/companies/c1`);
+  test("works for logged in users", async function () {
+    const resp = await request(app)
+      .get(`/companies/c1`)
+      .set("authorization", `Bearer ${u1Token}`);
     expect(resp.body).toEqual({
       company: {
         handle: "c1",
@@ -194,10 +196,8 @@ describe("GET /companies/:handle", function () {
     });
   });
 
-  test("works for logged in users", async function () {
-    const resp = await request(app)
-      .get(`/companies/c1`)
-      .set("authorization", `Bearer ${u1Token}`);
+  test("works for anon", async function () {
+    const resp = await request(app).get(`/companies/c1`);
     expect(resp.body).toEqual({
       company: {
         handle: "c1",
