@@ -86,24 +86,19 @@ describe("ensureLoggedIn", function () {
 describe("ensureAdmin", function () {
   test("works", function () {
 
-    expect.assertions(1);
+    // expect.assertions(1);
     const req = {};
     const res = { locals: { user: { isAdmin: true } } };
-    const next = function (err) {
+    const next = function (err) { //fake next function to make sure error is undefined
       expect(err).toBeFalsy();
     };
     ensureAdmin(req, res, next);
   });
 
   test("unauth if not admin", function () {
-    expect.assertions(1);
     const req = {};
     const res = { locals: { user: { isAdmin: false } } };
-    const next = function (err) {
-
-      expect(err instanceof UnauthorizedError).toBeTruthy();
-    };
-    ensureAdmin(req, res, next);
+    expect(() => ensureAdmin(req, res)).toThrow();
   });
 });
 
@@ -114,7 +109,7 @@ describe("ensureUserOrAdmin", function () {
 
     expect.assertions(1);
     const req = { params: { username: "test" } };
-    const res = { locals: { user: { isAdmin: true, username: "random" } } };
+    const res = { locals: { user: { isAdmin: true, username: "any-admin" } } };
     console.log("res.locals.user.username is ", res.locals.user.username);
     const next = function (err) {
       expect(err).toBeFalsy();
@@ -136,7 +131,7 @@ describe("ensureUserOrAdmin", function () {
   test("unauth if not admin and not the user", function () {
     expect.assertions(1);
     const req = { params: { username: "test" } };;
-    const res = { locals: { user: { isAdmin: false, username: "random" } } };
+    const res = { locals: { user: { isAdmin: false, username: "wrong" } } };
     const next = function (err) {
       expect(err instanceof UnauthorizedError).toBeTruthy();
     };

@@ -33,6 +33,7 @@ function authenticateJWT(req, res, next) {
  * If not, raises Unauthorized.
  */
 
+// better to make success the if statement, and the else is the error
 function ensureLoggedIn(req, res, next) {
   try {
     if (!res.locals.user) throw new UnauthorizedError("You must be logged in");
@@ -48,26 +49,22 @@ function ensureLoggedIn(req, res, next) {
  */
 
 function ensureAdmin(req, res, next) {
-  try {
-    if (!res.locals.user.isAdmin) {
-      throw new UnauthorizedError("You must be an admin");
-    }
-    return next();
-  } catch (err) {
-    return next(err);
+  if (!res.locals.user.isAdmin) {
+    throw new UnauthorizedError("You must be an admin");
   }
+  return next();
 }
 
-/** Middleware to use when they must be user or admin.
+/** Middleware to use when they must be user specified in url or admin.
  *
  * If not, raises Unauthorized.
  */
 
- function ensureUserOrAdmin(req, res, next) {
-   console.log("username is ", res.locals.user.username);
+//TODO: can get rid of try catch, write if condition for success, else for error (better for screening bugs)
+function ensureUserOrAdmin(req, res, next) {
   try {
     if (req.params.username !== res.locals.user.username
-                    && res.locals.user.isAdmin === false ) {
+      && res.locals.user.isAdmin === false) {
       throw new UnauthorizedError("You must be the user or an admin");
     }
     return next();

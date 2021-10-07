@@ -1,4 +1,4 @@
- "use strict";
+"use strict";
 
 /** Routes for users. */
 
@@ -73,7 +73,7 @@ router.get("/:username", ensureLoggedIn, ensureUserOrAdmin, async function (req,
  *
  * Returns { username, firstName, lastName, email, isAdmin }
  *
- * Authorization required: login, admin or the current users
+ * Authorization required: login, admin or the current user
  **/
 
 router.patch("/:username", ensureLoggedIn, ensureUserOrAdmin, async function (req, res, next) {
@@ -91,7 +91,7 @@ router.patch("/:username", ensureLoggedIn, ensureUserOrAdmin, async function (re
 
 /** DELETE /[username]  =>  { deleted: username }
  *
- * Authorization required: login, admin or the current users
+ * Authorization required: login, admin or the current user
  **/
 
 router.delete("/:username", ensureLoggedIn, ensureUserOrAdmin, async function (req, res, next) {

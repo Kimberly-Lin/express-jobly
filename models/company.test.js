@@ -113,6 +113,7 @@ describe("findFiltered", function () {
         logoUrl: "http://c2.img",
       }]);
   });
+
   test("no matching values", async function () {
     try {
       await Company.findFiltered({ name: "Super Cool Company" });
@@ -155,6 +156,7 @@ describe("findFiltered", function () {
 /************************************** get */
 
 describe("get", function () {
+
   test("works", async function () {
     let company = await Company.get("c1");
     expect(company).toEqual({
