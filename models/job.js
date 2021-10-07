@@ -6,6 +6,8 @@ const { sqlForPartialUpdate, sqlForFilteringCompany } = require("../helpers/sql"
 
 
 /** Related functions for jobs. */
+
+
 class Job {
     /** Create a job (from data), update db, return new job data.
    *
@@ -23,7 +25,7 @@ class Job {
             [companyHandle]);
       
           if (!checkValidCompany.rows[0])
-            throw new BadRequestError(`Company not found: ${companyHandle}`);
+            throw new BadRequestError("Company not found");
       
           const result = await db.query(
             `INSERT INTO jobs (
@@ -33,7 +35,7 @@ class Job {
                 company_handle)
                  VALUES
                    ($1, $2, $3, $4)
-                 RETURNING id, title, salary, equity, company_handle AS 'companyHandle`,
+                 RETURNING id, title, salary, equity, company_handle AS "companyHandle"`,
             [
               title, 
               salary, 
@@ -46,6 +48,9 @@ class Job {
           return job;
     }
 }
+
+module.exports = Job;
+
 // create
 // findAll
 // findFiltered
