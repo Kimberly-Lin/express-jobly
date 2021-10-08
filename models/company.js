@@ -206,7 +206,6 @@ class Company {
     }
 
     sqlWhere = sqlWhere.slice(0, sqlWhere.length - "AND ".length);
-    //if sqlWhere clauses is array, can use join with AND
     return sqlWhere;
   }
 
