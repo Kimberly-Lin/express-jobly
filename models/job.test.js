@@ -133,7 +133,7 @@ describe("findFiltered", function () {
 
 /************************************** get */
 
-xdescribe("get", function () {
+describe("get", function () {
 
     test("works", async function () {
         let job = await Job.get(j1id);
@@ -141,7 +141,7 @@ xdescribe("get", function () {
             id: expect.any(Number),
             title: "j1",
             salary: 10000,
-            equity: 0.1,
+            equity: "0.1",
             companyHandle: "c1",
         });
     });
@@ -159,11 +159,11 @@ xdescribe("get", function () {
 
 /************************************** update */
 
-xdescribe("update", function () {
+describe("update", function () {
     const updateData = {
         title: "Updated Title",
         salary: 50,
-        equity: -1,
+        equity: "-1",
     };
 
     test("works", async function () {
@@ -175,12 +175,12 @@ xdescribe("update", function () {
         });
 
         const result = await db.query(
-            `SELECT id, title, salary, equity, company_handle
+            `SELECT id, title, salary, equity, company_handle AS "companyHandle"
              FROM jobs
              WHERE id = ${j1id}`);
         expect(result.rows[0]).toEqual({
             id: j1id,
-            title: "Update Title",
+            title: "Updated Title",
             salary: 50,
             equity: "-1",
             companyHandle: "c1",
@@ -202,12 +202,12 @@ xdescribe("update", function () {
         });
 
         const result = await db.query(
-            `SELECT id, title, salary, equity, company_handle
+            `SELECT id, title, salary, equity, company_handle AS "companyHandle"
                FROM jobs
                WHERE id = ${j1id}`);
         expect(result.rows[0]).toEqual({
             id: j1id,
-            title: "Update Title",
+            title: "Updated Title",
             salary: null,
             equity: null,
             companyHandle: "c1",
@@ -223,16 +223,18 @@ xdescribe("update", function () {
         expect(job).toEqual({
             id: j1id,
             ...updatePartialData,
+            salary: 10000,
+            equity: "0.1",
             companyHandle: "c1",
         });
 
         const result = await db.query(
-            `SELECT id, title, salary, equity, company_handle
+            `SELECT id, title, salary, equity, company_handle AS "companyHandle"
                FROM jobs
                WHERE id = ${j1id}`);
         expect(result.rows[0]).toEqual({
             id: j1id,
-            title: "Update Title",
+            title: "Updated Title",
             salary: 10000,
             equity: "0.1",
             companyHandle: "c1",
@@ -245,12 +247,13 @@ xdescribe("update", function () {
             fail();
         } catch (err) {
             expect(err instanceof NotFoundError).toBeTruthy();
+            expect(err.message).toEqual("Job not found.");
         }
     });
 
     test("bad request with no data", async function () {
         try {
-            await Company.update(j1id, {});
+            await Job.update(j1id, {});
             fail();
         } catch (err) {
             expect(err instanceof BadRequestError).toBeTruthy();
@@ -260,10 +263,10 @@ xdescribe("update", function () {
 
 /************************************** remove */
 
-xdescribe("remove", function () {
+describe("remove", function () {
     test("works", async function () {
         await Job.remove(j1id);
-        const respose = await db.query(
+        const response = await db.query(
             `SELECT id FROM jobs WHERE id = ${j1id}`
         );
         expect(response.rows.length).toEqual(0);
@@ -275,6 +278,7 @@ xdescribe("remove", function () {
             fail();
         } catch (err) {
             expect(err instanceof NotFoundError).toBeTruthy();
+            expect(err.message).toEqual("Job not found.");
         };
     });
 });
