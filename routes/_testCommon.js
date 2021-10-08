@@ -10,31 +10,33 @@ async function commonBeforeAll() {
   await db.query("DELETE FROM users");
   // noinspection SqlWithoutWhere
   await db.query("DELETE FROM companies");
+  // noinspection SqlWithoutWhere
+  await db.query("DELETE FROM jobs");
 
   await Company.create(
-      {
-        handle: "c1",
-        name: "C1",
-        numEmployees: 1,
-        description: "Desc1",
-        logoUrl: "http://c1.img",
-      });
+    {
+      handle: "c1",
+      name: "C1",
+      numEmployees: 1,
+      description: "Desc1",
+      logoUrl: "http://c1.img",
+    });
   await Company.create(
-      {
-        handle: "c2",
-        name: "C2",
-        numEmployees: 2,
-        description: "Desc2",
-        logoUrl: "http://c2.img",
-      });
+    {
+      handle: "c2",
+      name: "C2",
+      numEmployees: 2,
+      description: "Desc2",
+      logoUrl: "http://c2.img",
+    });
   await Company.create(
-      {
-        handle: "c3",
-        name: "C3",
-        numEmployees: 3,
-        description: "Desc3",
-        logoUrl: "http://c3.img",
-      });
+    {
+      handle: "c3",
+      name: "C3",
+      numEmployees: 3,
+      description: "Desc3",
+      logoUrl: "http://c3.img",
+    });
 
   await User.register({
     username: "u1",
@@ -68,6 +70,30 @@ async function commonBeforeAll() {
     password: "password4",
     isAdmin: true,
   });
+
+  await Job.create({
+    title: "j1",
+    salary: 10000,
+    equity: 0.1,
+    companyHandle: "c1",
+  });
+  await Job.create({
+    title: "j2",
+    salary: 20000,
+    equity: 0,
+    companyHandle: "c1",
+  });
+  await Job.create({
+    title: "j3",
+    salary: 30000,
+    equity: 0.3,
+    companyHandle: "c2",
+  });
+
+  const result = db.query(`SELECT id FROM jobs ORDER BY title`);
+
+  const jobIds = result.rows.map(job => job.id);
+  [j1id, j2id, j3id] = jobIds;
 }
 
 async function commonBeforeEach() {
