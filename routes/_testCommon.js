@@ -1,8 +1,9 @@
-"use strict";
+// "use strict";
 
 const db = require("../db.js");
 const User = require("../models/user");
 const Company = require("../models/company");
+const Job = require("../models/job");
 const { createToken } = require("../helpers/tokens");
 
 async function commonBeforeAll() {
@@ -90,10 +91,11 @@ async function commonBeforeAll() {
     companyHandle: "c2",
   });
 
-  const result = db.query(`SELECT id FROM jobs ORDER BY title`);
+  const result = await db.query(`SELECT id FROM jobs ORDER BY title`);
 
   const jobIds = result.rows.map(job => job.id);
-  [j1id, j2id, j3id] = jobIds;
+
+  [j1id, j2id, j3id ] = jobIds;
 }
 
 async function commonBeforeEach() {
