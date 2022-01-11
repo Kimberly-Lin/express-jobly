@@ -1,11 +1,21 @@
-# Jobly Backend
+# Jobly Back-end
+Back-end for [Jobly](https://jobly-klin.surge.sh), a company and job searching web application. 
 
-This is the Express backend for Jobly.
+Jobly back-end is built with Node and Express.js.
 
-To run this:
+## Completed features
+- User login/signup
+- View all companies
+- View all jobs
+- View company detail and jobs for individual companies
+- User profile editing
 
-    node server.js
-    
-To run the tests:
-
-    jest -i
+## Getting Up & Running
+1. Run the Server
+    ```console
+    $ node server.js
+    ```
+2. Run the tests
+    ```console
+    $ jest -i
+    ```
